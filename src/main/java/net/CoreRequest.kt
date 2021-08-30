@@ -1,29 +1,40 @@
 package net
 
+import listener.OPQBaseListener
 import constant.MsgType
+import core.Core
 import okhttp3.MediaType
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
 
 object CoreRequest {
-    private val retrofit: Retrofit = Retrofit.Builder().baseUrl("http://qq.entergx.cn/").addConverterFactory(GsonConverterFactory.create()).build()
-    private val api: CoreApi = retrofit.create(CoreApi::class.java)
-    fun sendPrivateMsg(currentQQ: Long, toQQ: Long, content: String) {
-        sendMsg(currentQQ, null, toQQ, content, MsgType.MSG_PRIVATE)
+    private lateinit var retrofit: Retrofit
+    private lateinit var api: CoreApi
+    private lateinit var listener: OPQBaseListener
+    fun init(baseUrl:String,listener: OPQBaseListener) {
+        this.listener = listener
+        retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).build()
+        api = retrofit.create(CoreApi::class.java)
     }
 
-    fun sendGroupMsg(currentQQ: Long, toGroup: Long, content: String) {
-        sendMsg(currentQQ, null, toGroup, content, MsgType.MSG_GROUP)
+    fun sendPrivateMsg(toQQ: Long, content: String) {
+        sendMsg(null, toQQ, content, MsgType.MSG_PRIVATE)
     }
 
-    fun sendGroupMsgWithAt(currentQQ: Long, atQQ: Array<Long>, toGroup: Long, content: String) {
-        sendMsg(currentQQ, atQQ, toGroup, content, MsgType.MSG_GROUP)
+    fun sendGroupMsg(toGroup: Long, content: String) {
+        sendMsg(null, toGroup, content, MsgType.MSG_GROUP)
     }
 
-    @Synchronized
-    fun sendMsg(currentQQ: Long, atQQ: Array<Long>?, group: Long, content: String, type: Int) {
+    fun sendGroupMsgWithAt(atQQ: Array<Long>, toGroup: Long, content: String) {
+        sendMsg(atQQ, toGroup, content, MsgType.MSG_GROUP)
+    }
+
+    private fun sendMsg(atQQ: Array<Long>?, group: Long, content: String, type: Int) {
         var nContent = content.replace("\n", "\\n").replace("\"", "\\\"")
         atQQ?.let {
             var atContent = "[ATUSER("
@@ -36,22 +47,28 @@ object CoreRequest {
             }
             nContent = "$atContent)] $nContent"
         }
-        val body: RequestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), """{
-                "toUser":$group,
-                "sendToType":$type,
-                "sendMsgType":"TextMsg",
-                "content":"$nContent",
-                "groupid":0,
-                "atUser":0
-            }""")
+        sendMsg("/v1/LuaApiCaller?qq=${Core.currentQQ}&funcname=SendMsg&timeout=10","""{"toUser":$group,"sendToType":$type,"sendMsgType":"TextMsg","content":"$nContent","groupid":0,"atUser":0}""")
+    }
+
+    @Synchronized
+    fun sendMsg(url:String,jsonContent: String) {
+        val body: RequestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonContent)
         try {
-            api.sendMsg(currentQQ, body).execute()
-            println("[$body]")
-            Thread.sleep(1000)
-        } catch (e: IOException) {
-            e.printStackTrace()
+            api.sendMsg(url, body).enqueue(object : Callback<ResponseBody?> {
+                override fun onResponse(p0: Call<ResponseBody?>, p1: Response<ResponseBody?>) {
+                    p1.body()?.string()?.let { listener.onMsgSent(jsonContent, it) }
+                }
+
+                override fun onFailure(p0: Call<ResponseBody?>, p1: Throwable) {
+                    listener.onSendMsgError(jsonContent, p1)
+                }
+
+            })
+            Thread.sleep(Core.delay)
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
     }
+
+
 }

@@ -14,9 +14,9 @@ class GroupMsg {
          * Data : {"FromNickName":"xxx","MsgRandom":1807348683,"Content":"0","MsgSeq":2410,"FromGroupName":"Enter、1、此心也曾渴慕","FromUserId":1111,"constant.MsgType":"TextMsg","RedBaginfo":null,"MsgTime":1630026418,"FromGroupId":1111}
          */
         var WebConnId: String? = null
-        var Data: DataEntity? = null
+        var Data: GroupDataEntity? = null
 
-        inner class DataEntity {
+        inner class GroupDataEntity {
             /**
              * FromNickName : xxx
              * MsgRandom : 1807348683

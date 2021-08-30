@@ -14,9 +14,9 @@ class PrivateMsg {
          * Data : {"Content":"1","MsgSeq":4355,"FromUin":1111,"constant.MsgType":"TextMsg","ToUin":1111,"RedBaginfo":null}
          */
         var WebConnId: String? = null
-        var Data: DataEntity? = null
+        var Data: PrivateDataEntity? = null
 
-        inner class DataEntity {
+        inner class PrivateDataEntity {
             /**
              * Content : 1
              * MsgSeq : 4355
