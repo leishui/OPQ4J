@@ -10,7 +10,7 @@ public class JMain {
         由于服务器响应速度等问题，间隔时间过小可能导致消息丢失*/
         //core.setDelay(500);
         //1.通过重写OPQListener中的方法进行监听
-        //我只实现了部分消息监听
+        //我只实现了部分消息监听  详见源码
         core.start(new OPQListener() {
             @Override
             public void onPrivateTextMsg(long toQQ, @NotNull String textContent) {
