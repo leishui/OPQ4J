@@ -11,14 +11,23 @@ class Core(private val url: String, private val port: Int, currentQQ: Long) {
     private val options = IO.Options()
 
     companion object {
+        //当前QQ号
         var currentQQ: Long = 0
+        //发送请求的间隔时间
         var delay: Long = 1000
     }
 
+    /**
+     * 设置发送请求的间隔时间
+     * @param delay Long 间隔时间ms
+     */
     fun setDelay(delay: Long) {
         Companion.delay = delay
     }
 
+    /**
+     * 初始化
+     */
     init {
         Companion.currentQQ = currentQQ
         options.transports = arrayOf("websocket")
