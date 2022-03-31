@@ -23,18 +23,18 @@ object CoreRequest {
     }
 
     fun sendPrivateMsg(toQQ: Long, content: String) {
-        sendMsg(null, toQQ, content, MsgType.MSG_PRIVATE)
+        postData(null, toQQ, content, MsgType.MSG_PRIVATE)
     }
 
     fun sendGroupMsg(toGroup: Long, content: String) {
-        sendMsg(null, toGroup, content, MsgType.MSG_GROUP)
+        postData(null, toGroup, content, MsgType.MSG_GROUP)
     }
 
     fun sendGroupMsgWithAt(atQQ: Array<Long>, toGroup: Long, content: String) {
-        sendMsg(atQQ, toGroup, content, MsgType.MSG_GROUP)
+        postData(atQQ, toGroup, content, MsgType.MSG_GROUP)
     }
 
-    private fun sendMsg(atQQ: Array<Long>?, group: Long, content: String, type: Int) {
+    private fun postData(atQQ: Array<Long>?, group: Long, content: String, type: Int) {
         var nContent = content.replace("\n", "\\n").replace("\"", "\\\"")
         atQQ?.let {
             var atContent = "[ATUSER("
@@ -47,24 +47,41 @@ object CoreRequest {
             }
             nContent = "$atContent)] $nContent"
         }
-        sendMsg("/v1/LuaApiCaller?qq=${Core.currentQQ}&funcname=SendMsg&timeout=10","""{"toUser":$group,"sendToType":$type,"sendMsgType":"TextMsg","content":"$nContent","groupid":0,"atUser":0}""")
+        postData("/v1/LuaApiCaller?qq=${Core.currentQQ}&funcname=SendMsg&timeout=10","""{"toUser":$group,"sendToType":$type,"sendMsgType":"TextMsg","content":"$nContent","groupid":0,"atUser":0}""")
     }
 
     @Synchronized
-    fun sendMsg(url:String,jsonContent: String) {
+    fun postData(url:String, jsonContent: String) {
         val body: RequestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonContent)
         try {
-            api.sendMsg(url, body).enqueue(object : Callback<ResponseBody?> {
-                override fun onResponse(p0: Call<ResponseBody?>, p1: Response<ResponseBody?>) {
+            api.postData(url, body).enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(p0: Call<ResponseBody>, p1: Response<ResponseBody>) {
                     p1.body()?.string()?.let { listener.onMsgSent(jsonContent, it) }
                 }
 
-                override fun onFailure(p0: Call<ResponseBody?>, p1: Throwable) {
+                override fun onFailure(p0: Call<ResponseBody>, p1: Throwable) {
                     listener.onSendMsgError(jsonContent, p1)
                 }
 
             })
             Thread.sleep(Core.delay)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+    }
+    @Synchronized
+    fun getData(url:String) {
+        try {
+            api.getData(url).enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(p0: Call<ResponseBody>, p1: Response<ResponseBody>) {
+                    p1.body()?.string()?.let { listener.onMsgSent(url,it) }
+                }
+                override fun onFailure(p0: Call<ResponseBody>, p1: Throwable) {
+                    listener.onSendMsgError(url,p1)
+                }
+
+            })
+            //Thread.sleep(Core.delay)
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }

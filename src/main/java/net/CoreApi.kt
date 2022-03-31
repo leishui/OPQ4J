@@ -8,5 +8,8 @@ import retrofit2.http.*
 interface CoreApi {
     @Headers("Content-Type: application/json", "Accept: application/json")
     @POST
-    fun sendMsg(@Url url: String, @Body json: RequestBody?): Call<ResponseBody?>
+    fun postData(@Url url: String, @Body json: RequestBody): Call<ResponseBody>
+
+    @GET
+    fun getData(@Url url: String): Call<ResponseBody>
 }

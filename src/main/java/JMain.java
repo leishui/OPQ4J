@@ -26,7 +26,7 @@ public class JMain {
                 //使用sendMsg方法时需要注意带'\'的需要将'\'转义，例如:
                 //'\n'->'\\n'         '\"'->'\\\"'
                 String nContent = "\\\"a\\nb\\n";
-                core.sendMsg("/v1/LuaApiCaller?qq=" + Core.Companion.getCurrentQQ() + "&funcname=SendMsg&timeout=10",
+                core.postData("/v1/LuaApiCaller?qq=" + Core.Companion.getCurrentQQ() + "&funcname=SendMsg&timeout=10",
                         "{\"toUser\":" + toQQ + ",\"sendToType\":1,\"sendMsgType\":\"TextMsg\",\"content\":\"" + nContent + "\",\"groupid\":0,\"atUser\":0}");
             }
         });

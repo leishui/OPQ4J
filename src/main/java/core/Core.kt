@@ -70,8 +70,16 @@ class Core(private val url: String, private val port: Int, currentQQ: Long) {
      * @param url String api路径，参考文档，例如：/v1/LuaApiCaller?qq=111&funcname=SendMsg&timeout=10
      * @param jsonBody String json消息体
      */
-    fun sendMsg(url:String, jsonBody:String){
-        CoreRequest.sendMsg(url,jsonBody)
+    fun postData(url:String, jsonBody:String){
+        CoreRequest.postData(url,jsonBody)
+    }
+    /**
+     * 进行GET请求
+     * @param url String api路径，参考文档，例如：/v1/LuaApiCaller?qq=111&funcname=SendMsg&timeout=10
+     * @param jsonBody String json消息体
+     */
+    fun getData(url:String, jsonBody:String){
+        CoreRequest.postData(url,jsonBody)
     }
     fun start(listener: OPQBaseListener) {
         CoreRequest.init("$url:$port", listener)
