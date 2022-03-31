@@ -4,7 +4,7 @@ import listener.OPQListener
 fun main() {
     //服务器地址、端口、机器人QQ
     //val core = Core("http://xxx.xxx.xxx.xxx", 2233, 1000000000)
-    val core = Core("http://118.178.178.211", 2233, 2056378490)
+    val core = Core("http://xxx.xxx.xxx.xxx", 2233, 1000000000)
     /*设置发送消息的最小间隔时间，默认为1000ms
         由于服务器响应速度等问题，间隔时间过小可能导致消息丢失*/
     //core.setDelay(500);
