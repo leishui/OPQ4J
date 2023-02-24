@@ -11,7 +11,7 @@ maven引入
 </dependency>
 ```
 gradle
-```
+```gradle
 implementation group: 'io.github.leishui', name: 'OPQ4J', version: '1.0.0'
 ```
 #### 简单用例
