@@ -2,6 +2,15 @@
 #### 介绍
 OPQ/IOTQQ/IOTBot 的一个 Java/Kotlin 开发助手
 #### 使用说明
+maven引入
+```xml
+<dependency>
+  <groupId>io.github.leishui</groupId>
+  <artifactId>OPQ4J</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+#### 简单用例
 Java
 ```java
 import core.Core;
