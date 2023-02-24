@@ -13,6 +13,7 @@ maven引入
 gradle
 ```
 implementation group: 'io.github.leishui', name: 'OPQ4J', version: '1.0.0'
+```
 #### 简单用例
 Java
 ```java
